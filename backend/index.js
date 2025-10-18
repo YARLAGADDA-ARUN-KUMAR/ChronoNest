@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const connectDB = require("./config/database");
 
 dotenv.config();
 
@@ -18,9 +19,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send({ message: "ChronoNest API is running!" });
+  res.json({ message: "Chrono Nest API is running!" });
 });
 
+connectDB();
 app.listen(PORT, () => {
   console.log(`Chrono Nest server running on port: ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
