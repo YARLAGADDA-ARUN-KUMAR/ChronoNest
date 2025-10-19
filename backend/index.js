@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/auth");
 const capsuleRoutes = require("./routes/capsule");
+require("./services/cronService");
 
 dotenv.config();
 
