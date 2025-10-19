@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/auth");
+const capsuleRoutes = require("./routes/capsule");
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/capsules", capsuleRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Chrono Nest API is running!" });
 });

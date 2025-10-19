@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["curator", "recepient"],
+      enum: ["curator"],
       default: "curator",
     },
     isActive: {
@@ -35,6 +35,22 @@ const userSchema = new mongoose.Schema(
     heartbeatMissedCount: {
       type: Number,
       default: 0,
+    },
+    heartbeatIntervalDays: {
+      type: Number,
+      default: 30,
+    },
+    preferredHeartbeatChannel: {
+      type: String,
+      enum: ["email", "whatsapp"],
+      default: "email",
+    },
+    heartbeatContact: {
+      type: String,
+    },
+    nextHeartbeat: {
+      type: Date,
+      default: Date.now,
     },
   },
   {

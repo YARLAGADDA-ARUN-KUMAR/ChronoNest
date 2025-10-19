@@ -36,7 +36,7 @@ const auth = async (req, res, next) => {
         .json({ message: "User associated with this token not found." });
     }
 
-    req.user = user;
+    req.userId = user._id;
     next();
   } catch (err) {
     console.error("Auth middleware error:", err);
