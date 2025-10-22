@@ -25,21 +25,7 @@ export default function AuthenticatedNavbar() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-10">
-          <nav className="hidden md:flex items-center gap-10">
-            <Link
-              to="/dashboard"
-              className="text-sm font-medium hover:text-primary transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/create-capsule"
-              className="text-sm font-medium hover:text-primary transition-colors"
-            >
-              Create Capsule
-            </Link>
-          </nav>
+        <div className="flex items-center border-4 rounded-full border-[rgb(113,245,255)]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">

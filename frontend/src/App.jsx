@@ -8,6 +8,7 @@ import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
 import NotFound from "../pages/NotFound";
 import Settings from "../pages/Settings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -16,11 +17,26 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<DashBoard />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashBoard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create-capsule"
+              element={
+                <ProtectedRoute>
+                  <CreateCapsule />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/create-capsule" element={<CreateCapsule />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

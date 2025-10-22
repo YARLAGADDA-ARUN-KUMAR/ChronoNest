@@ -3,31 +3,36 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 exports.signup = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, whatsapp, contact, frequency, terms } =
+    req.body;
   try {
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !contact || !frequency) {
       return res.status(400).json({ message: "All fields are required" });
     }
-
     let user = await User.findOne({ email });
     if (user) {
       return res.status(409).json({ message: "Email is Already existed" });
     }
-
     const hashPassword = await bcrypt.hash(password, 10);
+
+    let profilePicPath = req.file ? req.file.path : undefined;
+
     user = await User.create({
       name,
       email,
       password: hashPassword,
       role: role || "curator",
+      whatsapp,
+      contact,
+      frequency,
+      terms,
+      profilePic: profilePicPath,
     });
 
     const token = jwt.sign(
       { userId: user._id, role: user.role, email: user.email },
       process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRE,
-      }
+      { expiresIn: process.env.JWT_EXPIRE }
     );
     return res.status(201).json({
       message: "Signup successful",
@@ -37,6 +42,7 @@ exports.signup = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        profilePic: user.profilePic,
       },
     });
   } catch (error) {

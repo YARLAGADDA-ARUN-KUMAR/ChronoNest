@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema(
       enum: ["curator"],
       default: "curator",
     },
+    profilePic: {
+      type: String,
+    },
     isActive: {
       type: Boolean,
       default: true,
