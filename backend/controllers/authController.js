@@ -11,7 +11,7 @@ exports.signup = async (req, res) => {
     }
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(409).json({ message: "Email is Already existed" });
+      return res.status(409).json({ message: "Email already exists" });
     }
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -27,6 +27,7 @@ exports.signup = async (req, res) => {
       frequency,
       terms,
       profilePic: profilePicPath,
+      heartbeatIntervalDays: frequency,
     });
 
     const token = jwt.sign(

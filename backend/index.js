@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/auth");
 const capsuleRoutes = require("./routes/capsule");
+const heartbeatRoutes = require("./routes/heartbeatRoutes");
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/capsules", capsuleRoutes);
+app.use("/api/heartbeat", heartbeatRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Chrono Nest API is running!" });
 });

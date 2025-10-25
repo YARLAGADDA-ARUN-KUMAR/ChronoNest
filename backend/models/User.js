@@ -27,6 +27,20 @@ const userSchema = new mongoose.Schema(
     profilePic: {
       type: String,
     },
+    whatsapp: {
+      type: String,
+    },
+    contact: {
+      type: String,
+    },
+    frequency: {
+      type: Number,
+      default: 30,
+    },
+    terms: {
+      type: Boolean,
+      default: false,
+    },
     isActive: {
       type: Boolean,
       default: true,

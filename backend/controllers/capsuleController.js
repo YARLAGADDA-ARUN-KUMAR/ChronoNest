@@ -29,10 +29,8 @@ exports.createCapsule = async (req, res) => {
 
         recipientsArr = recipientsArr
           .map((recipient) => {
-            if (typeof recipient === "string") {
+            if (typeof recipient === "string")
               recipient = JSON.parse(recipient);
-            }
-
             if (recipient.type && recipient.value) {
               return recipient.type === "email"
                 ? { email: recipient.value }
@@ -44,7 +42,6 @@ exports.createCapsule = async (req, res) => {
             (recipient) => recipient && (recipient.email || recipient.whatsapp)
           );
       } catch (err) {
-        console.error("Recipients parse error:", err);
         recipientsArr = [];
       }
     }
@@ -82,7 +79,6 @@ exports.createCapsule = async (req, res) => {
 
     res.status(201).json({ message: "Capsule created!", capsule });
   } catch (error) {
-    console.error("Create capsule error:", error);
     res
       .status(500)
       .json({ message: "Failed to create capsule", error: error.message });
@@ -162,7 +158,7 @@ exports.updateCapsule = async (req, res) => {
     const videosArr = req.body.videos
       ? Array.isArray(req.body.videos)
         ? req.body.videos
-        : [req.body.videos]
+        : [req.body.videos].filter(Boolean)
       : capsule.videos;
 
     capsule.title = req.body.title ?? capsule.title;
