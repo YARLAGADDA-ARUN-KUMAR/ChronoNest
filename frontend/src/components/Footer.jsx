@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-20 flex flex-col md:flex-row justify-between items-center text-slate-400 text-base">
+    <footer className="w-full flex flex-col md:flex-row justify-between items-center text-slate-400 text-base">
       <div>
         <Link to="/terms" className="hover:text-cyan-300">
           Terms & Privacy

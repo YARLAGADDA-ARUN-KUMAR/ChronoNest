@@ -34,9 +34,8 @@ export default function Home() {
             <Link to="/signup">Start Now</Link>
           </Button>
         </div>
-        {/* === FEATURES SECTION === */}
-        <section className="flex flex-col md:flex-row gap-8 justify-center w-full max-w-6xl px-4">
-          {/* Card 1 */}
+
+        <section className="flex flex-col md:flex-row gap-8 justify-center w-full max-w-6xl px-4 mb-10">
           <Card className="relative bg-transparent backdrop-blur-md border border-[rgb(113,245,255)] rounded-2xl text-white shadow-[0_0_12px_rgba(113,245,255,0.5)] transition-all duration-500 flex-1 hover:shadow-[0_0_25px_rgba(113,245,255,0.8)]">
             <CardHeader className="flex flex-col items-start gap-4">
               <div className="p-2 rounded-full bg-[rgba(113,245,255,0.08)] border border-[rgb(113,245,255)]">
@@ -65,7 +64,6 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          {/* Card 2 */}
           <Card className="relative bg-transparent backdrop-blur-md border border-[rgb(113,245,255)] rounded-2xl text-white shadow-[0_0_12px_rgba(113,245,255,0.5)] transition-all duration-500 flex-1 hover:shadow-[0_0_25px_rgba(113,245,255,0.8)]">
             <CardHeader className="flex flex-col items-start gap-4">
               <div className="p-2 rounded-full bg-[rgba(113,245,255,0.08)] border border-[rgb(113,245,255)]">
@@ -92,7 +90,6 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          {/* Card 3 */}
           <Card className="relative bg-transparent backdrop-blur-md border border-[rgb(113,245,255)] rounded-2xl text-white shadow-[0_0_12px_rgba(113,245,255,0.5)] transition-all duration-500 flex-1 hover:shadow-[0_0_25px_rgba(113,245,255,0.8)]">
             <CardHeader className="flex flex-col items-start gap-4">
               <div className="p-2 rounded-full bg-[rgba(113,245,255,0.08)] border border-[rgb(113,245,255)]">
