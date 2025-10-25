@@ -46,19 +46,26 @@ export default function CapsuleForm() {
       const formData = new FormData();
       formData.append("title", fields.title);
       formData.append("description", fields.description);
-      fields.images.forEach((img) => formData.append("images", img));
-      fields.videos.forEach((v) => formData.append("videos", v));
-      formData.append(
-        "recipients",
-        JSON.stringify(
-          fields.recipients.map((r) => {
-            const recipientObj = {};
-            if (r.type === "email") recipientObj.email = r.value;
-            else if (r.type === "whatsapp") recipientObj.whatsapp = r.value;
-            return recipientObj;
-          })
-        )
-      );
+
+      fields.images.forEach((img) => {
+        if (img instanceof File) {
+          formData.append("images", img);
+        }
+      });
+
+      const validVideos = fields.videos.filter((video) => video.trim() !== "");
+      validVideos.forEach((video, index) => {
+        formData.append(`videos[${index}]`, video);
+      });
+
+      const recipientsToSend = fields.recipients
+        .filter((recipient) => recipient.value.trim())
+        .map((recipient) => ({
+          type: recipient.type,
+          value: recipient.value.trim(),
+        }));
+
+      formData.append("recipients", JSON.stringify(recipientsToSend));
       formData.append("triggerType", fields.triggerType);
       formData.append("triggerDate", fields.triggerDate);
 
@@ -136,7 +143,11 @@ export default function CapsuleForm() {
                 {fields.triggerType === "date" && (
                   <TriggerDatePicker
                     triggerDate={fields.triggerDate}
-                    onChange={(date) => handleChange("triggerDate", date)}
+                    onChange={(date) => {
+                      const isoDate =
+                        date instanceof Date ? date.toISOString() : date;
+                      handleChange("triggerDate", isoDate);
+                    }}
                   />
                 )}
                 {error && (

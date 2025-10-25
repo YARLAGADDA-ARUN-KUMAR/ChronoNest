@@ -4,7 +4,6 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/auth");
 const capsuleRoutes = require("./routes/capsule");
-require("./services/cronService");
 
 dotenv.config();
 
@@ -28,6 +27,8 @@ app.use("/api/capsules", capsuleRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Chrono Nest API is running!" });
 });
+
+require("./services/cronService");
 
 app.listen(PORT, () => {
   console.log(`Chrono Nest server running on port: ${PORT}`);

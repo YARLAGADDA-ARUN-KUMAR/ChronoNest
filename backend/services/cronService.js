@@ -3,23 +3,20 @@ const Capsule = require("../models/Capsule");
 const emailService = require("./emailService");
 
 cron.schedule("0 0 * * *", async () => {
-  console.log("CRON JOB: Checking for capsules to be released...");
-
+  console.log("CRON: Checking for capsules to be released...");
   try {
     const now = new Date();
     const capsulesToRelease = await Capsule.find({
       isReleased: false,
+      triggerType: "date",
       triggerDate: { $lte: now },
     });
-
     if (!capsulesToRelease.length) {
-      return console.log("CRON JOB: No capsules are due for release today.");
+      return console.log("CRON: No eligible capsules for release.");
     }
-
     console.log(
-      `CRON JOB: Found ${capsulesToRelease.length} capsule(s) to release.`
+      `CRON: Found ${capsulesToRelease.length} capsule(s) for release.`
     );
-
     await Promise.all(
       capsulesToRelease.map(async (capsule) => {
         capsule.isReleased = true;
@@ -27,29 +24,26 @@ cron.schedule("0 0 * * *", async () => {
         await capsule.save();
 
         const emailRecipients = capsule.recipients.filter((r) => r.email);
-
         const emailPromises = emailRecipients.map((recipient) =>
           emailService
             .sendCapsuleNotification(recipient.email, capsule)
             .then(() =>
               console.log(
-                `   -> Notification sent successfully to ${recipient.email} for capsule ${capsule._id}`
+                `Notification sent to ${recipient.email} for ${capsule._id}`
               )
             )
             .catch((err) =>
               console.error(
-                `   -> FAILED to send notification to ${recipient.email}:`,
+                `FAILED notification to ${recipient.email}:`,
                 err.message
               )
             )
         );
-
         await Promise.all(emailPromises);
       })
     );
-
-    console.log("CRON JOB: All due capsules have been processed successfully.");
+    console.log("CRON: Done processing all due capsules.");
   } catch (err) {
-    console.error("CRON JOB: A critical error occurred:", err.message);
+    console.error("CRON: Release error occurred:", err.message);
   }
 });

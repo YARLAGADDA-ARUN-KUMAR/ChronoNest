@@ -7,7 +7,9 @@ import CreateCapsule from "../pages/CreateCapsule";
 import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
 import NotFound from "../pages/NotFound";
-import Settings from "../pages/Settings";
+import CapsuleListPage from "../pages/CapsuleListPage";
+import CapsuleDetailsPage from "../pages/CapsuleDetailsPage";
+import CapsuleEditForm from "../pages/CapsuleEditForm";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -17,6 +19,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+
             <Route
               path="/dashboard"
               element={
@@ -33,10 +36,33 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/capsule-list"
+              element={
+                <ProtectedRoute>
+                  <CapsuleListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/capsule/:id"
+              element={
+                <ProtectedRoute>
+                  <CapsuleDetailsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/capsule/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <CapsuleEditForm />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
