@@ -2,6 +2,7 @@ const cron = require("node-cron");
 const Capsule = require("../models/Capsule");
 const User = require("../models/User");
 const emailService = require("./emailService");
+const whatsappService = require("./whatsappService");
 
 cron.schedule("0 0 * * *", async () => {
   console.log("CRON: Checking for capsules to be released...");
@@ -28,6 +29,8 @@ cron.schedule("0 0 * * *", async () => {
         await capsule.save();
 
         const emailRecipients = capsule.recipients.filter((r) => r.email);
+        const whatsappRecipients = capsule.recipients.filter((r) => r.whatsapp);
+
         if (emailRecipients.length > 0) {
           await Promise.all(
             emailRecipients.map(async (recipient) => {
@@ -37,13 +40,53 @@ cron.schedule("0 0 * * *", async () => {
                   capsule
                 );
                 console.log(
-                  `Notification sent to ${recipient.email} for capsule ${capsule._id}`
+                  `Email notification sent to ${recipient.email} for capsule ${capsule._id}`
                 );
               } catch (err) {
                 console.error(
-                  `FAILED notification to ${recipient.email}:`,
+                  `FAILED email notification to ${recipient.email}:`,
                   err.message
                 );
+              }
+            })
+          );
+        }
+
+        if (whatsappRecipients.length > 0) {
+          await Promise.all(
+            whatsappRecipients.map(async (recipient) => {
+              try {
+                const message = `🎁 You've received a memory capsule from ChronoNest!\n\nTitle: ${
+                  capsule.title
+                }\nDescription: ${
+                  capsule.description || "No description"
+                }\n\nThis capsule was created to be delivered to you on this special date. Cherish the memories! ❤️`;
+                await whatsappService.sendWhatsAppMessage(
+                  recipient.whatsapp,
+                  message
+                );
+                console.log(
+                  `WhatsApp notification sent to ${recipient.whatsapp} for capsule ${capsule._id}`
+                );
+              } catch (err) {
+                console.error(
+                  `FAILED WhatsApp notification to ${recipient.whatsapp}:`,
+                  err.message
+                );
+
+                if (err.message.includes("Not authorized")) {
+                  console.log(
+                    `Sending sandbox invite to ${recipient.whatsapp}`
+                  );
+                  try {
+                    await whatsappService.sendSandboxInvite(recipient.whatsapp);
+                  } catch (inviteError) {
+                    console.error(
+                      `Failed to send sandbox invite:`,
+                      inviteError.message
+                    );
+                  }
+                }
               }
             })
           );
@@ -103,6 +146,10 @@ cron.schedule("0 1 * * *", async () => {
                 const emailRecipients = capsule.recipients.filter(
                   (r) => r.email
                 );
+                const whatsappRecipients = capsule.recipients.filter(
+                  (r) => r.whatsapp
+                );
+
                 for (const recipient of emailRecipients) {
                   try {
                     await emailService.sendCapsuleNotification(
@@ -110,13 +157,51 @@ cron.schedule("0 1 * * *", async () => {
                       capsule
                     );
                     console.log(
-                      `Butterfly notification sent to ${recipient.email} for capsule ${capsule._id}`
+                      `Butterfly email notification sent to ${recipient.email} for capsule ${capsule._id}`
                     );
                   } catch (emailError) {
                     console.error(
-                      `Failed to send butterfly notification to ${recipient.email}:`,
+                      `Failed to send butterfly email to ${recipient.email}:`,
                       emailError.message
                     );
+                  }
+                }
+
+                for (const recipient of whatsappRecipients) {
+                  try {
+                    const message = `🦋 Butterfly Capsule Released!\n\nTitle: ${
+                      capsule.title
+                    }\nDescription: ${
+                      capsule.description || "No description"
+                    }\n\nThis capsule was released because the creator hasn't checked in recently. This ensures your memories are never lost. ❤️`;
+                    await whatsappService.sendWhatsAppMessage(
+                      recipient.whatsapp,
+                      message
+                    );
+                    console.log(
+                      `Butterfly WhatsApp notification sent to ${recipient.whatsapp} for capsule ${capsule._id}`
+                    );
+                  } catch (whatsappError) {
+                    console.error(
+                      `Failed to send butterfly WhatsApp to ${recipient.whatsapp}:`,
+                      whatsappError.message
+                    );
+
+                    if (whatsappError.message.includes("Not authorized")) {
+                      console.log(
+                        `Sending sandbox invite to ${recipient.whatsapp}`
+                      );
+                      try {
+                        await whatsappService.sendSandboxInvite(
+                          recipient.whatsapp
+                        );
+                      } catch (inviteError) {
+                        console.error(
+                          `Failed to send sandbox invite:`,
+                          inviteError.message
+                        );
+                      }
+                    }
                   }
                 }
               } catch (capsuleError) {
@@ -132,7 +217,47 @@ cron.schedule("0 1 * * *", async () => {
           console.log(
             `CRON: Sending heartbeat reminder to user ${user._id}. Missed count: ${user.heartbeatMissedCount}`
           );
-          await emailService.sendHeartbeatReminder(user);
+
+          if (
+            user.preferredHeartbeatChannel === "whatsapp" &&
+            user.heartbeatContact
+          ) {
+            try {
+              const message = `⏰ ChronoNest Heartbeat Reminder\n\nHi ${user.name}, it's time to check in!\n\nYou've missed ${user.heartbeatMissedCount} check-in(s). Please log in to ChronoNest to keep your capsules safe.\n\nIf you miss 3 check-ins, your butterfly capsules will be released automatically.`;
+              await whatsappService.sendWhatsAppMessage(
+                user.heartbeatContact,
+                message
+              );
+              console.log(
+                `WhatsApp heartbeat reminder sent to ${user.heartbeatContact}`
+              );
+            } catch (whatsappError) {
+              console.error(
+                `Failed to send WhatsApp reminder to ${user.heartbeatContact}:`,
+                whatsappError.message
+              );
+
+              if (whatsappError.message.includes("Not authorized")) {
+                console.log(
+                  `Sending sandbox invite to ${user.heartbeatContact}`
+                );
+                try {
+                  await whatsappService.sendSandboxInvite(
+                    user.heartbeatContact
+                  );
+                } catch (inviteError) {
+                  console.error(
+                    `Failed to send sandbox invite:`,
+                    inviteError.message
+                  );
+                }
+              }
+
+              await emailService.sendHeartbeatReminder(user);
+            }
+          } else {
+            await emailService.sendHeartbeatReminder(user);
+          }
 
           const nextHeartbeat = new Date();
           nextHeartbeat.setDate(now.getDate() + user.heartbeatIntervalDays);
