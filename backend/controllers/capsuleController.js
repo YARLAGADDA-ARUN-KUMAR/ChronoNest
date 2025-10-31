@@ -4,17 +4,6 @@ exports.createCapsule = async (req, res) => {
   try {
     const { title, description, triggerType, triggerDate, videos } = req.body;
 
-    if (
-      triggerType === "date" &&
-      (!triggerDate || isNaN(new Date(triggerDate).getTime()))
-    ) {
-      return res
-        .status(400)
-        .json({
-          message: "Valid trigger date is required for date-based capsules.",
-        });
-    }
-
     let recipientsArr = [];
     if (req.body.recipients) {
       try {
@@ -46,14 +35,20 @@ exports.createCapsule = async (req, res) => {
       }
     }
 
+    if (!title || !description || recipientsArr.length === 0 || !triggerType) {
+      return res.status(400).json({
+        message:
+          "Title, description, recipients, and trigger type are required.",
+      });
+    }
+
     if (
-      !title ||
-      !description ||
-      recipientsArr.length === 0 ||
-      !triggerType ||
-      !triggerDate
+      triggerType === "date" &&
+      (!triggerDate || isNaN(new Date(triggerDate).getTime()))
     ) {
-      return res.status(400).json({ message: "All fields are required." });
+      return res.status(400).json({
+        message: "Valid trigger date is required for date-based capsules.",
+      });
     }
 
     let imageUrls = [];
@@ -66,7 +61,7 @@ exports.createCapsule = async (req, res) => {
 
     const videosArr = Array.isArray(videos) ? videos : [videos].filter(Boolean);
 
-    const capsule = await Capsule.create({
+    const capsuleData = {
       title,
       description,
       recipients: recipientsArr,
@@ -74,8 +69,13 @@ exports.createCapsule = async (req, res) => {
       videos: videosArr,
       createdBy: req.userId,
       triggerType,
-      triggerDate,
-    });
+    };
+
+    if (triggerType === "date") {
+      capsuleData.triggerDate = triggerDate;
+    }
+
+    const capsule = await Capsule.create(capsuleData);
 
     res.status(201).json({ message: "Capsule created!", capsule });
   } catch (error) {
@@ -118,11 +118,9 @@ exports.updateCapsule = async (req, res) => {
       req.body.triggerType === "date" &&
       (!req.body.triggerDate || isNaN(new Date(req.body.triggerDate).getTime()))
     ) {
-      return res
-        .status(400)
-        .json({
-          message: "Valid trigger date is required for date-based capsules.",
-        });
+      return res.status(400).json({
+        message: "Valid trigger date is required for date-based capsules.",
+      });
     }
 
     let recipientsArr = [];
@@ -142,7 +140,7 @@ exports.updateCapsule = async (req, res) => {
             (recipient) => recipient && (recipient.email || recipient.whatsapp)
           );
       } catch (e) {
-        recipientsArr = [];
+        recipientsArr = capsule.recipients;
       }
     }
 
@@ -166,10 +164,15 @@ exports.updateCapsule = async (req, res) => {
     capsule.images = imageUrls;
     capsule.videos = videosArr;
     capsule.triggerType = req.body.triggerType ?? capsule.triggerType;
-    capsule.triggerDate = req.body.triggerDate ?? capsule.triggerDate;
     capsule.recipients = recipientsArr.length
       ? recipientsArr
       : capsule.recipients;
+
+    if (req.body.triggerType === "date") {
+      capsule.triggerDate = req.body.triggerDate ?? capsule.triggerDate;
+    } else {
+      capsule.triggerDate = undefined;
+    }
 
     await capsule.save();
     res.json({ message: "Capsule updated!", capsule });
@@ -206,7 +209,10 @@ exports.getDashboardSummary = async (req, res) => {
     const pending = count - released;
     const now = new Date();
     const upcoming = allCapsules.find(
-      (c) => new Date(c.triggerDate) > now && !c.isReleased
+      (c) =>
+        c.triggerType === "date" &&
+        new Date(c.triggerDate) > now &&
+        !c.isReleased
     );
     res.json({
       count,

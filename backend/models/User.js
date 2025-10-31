@@ -69,6 +69,16 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    lastEngagementEmailSent: {
+      type: Date,
+    },
+    lastEngagementClick: {
+      type: Date,
+    },
+    consecutiveEngagementMisses: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

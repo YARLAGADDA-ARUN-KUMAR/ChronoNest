@@ -15,11 +15,11 @@ cron.schedule("0 0 * * *", async () => {
     });
 
     if (!capsulesToRelease.length) {
-      return console.log("CRON: No eligible capsules for release.");
+      return console.log("CRON: No eligible date-based capsules for release.");
     }
 
     console.log(
-      `CRON: Found ${capsulesToRelease.length} capsule(s) for release.`
+      `CRON: Found ${capsulesToRelease.length} date-based capsule(s) for release.`
     );
 
     for (const capsule of capsulesToRelease) {
@@ -93,15 +93,15 @@ cron.schedule("0 0 * * *", async () => {
         }
       } catch (capsuleError) {
         console.error(
-          `Error processing capsule ${capsule._id}:`,
+          `Error processing date-based capsule ${capsule._id}:`,
           capsuleError.message
         );
       }
     }
 
-    console.log("CRON: Done processing all due capsules.");
+    console.log("CRON: Done processing all due date-based capsules.");
   } catch (err) {
-    console.error("CRON: Release error occurred:", err.message);
+    console.error("CRON: Date-based release error occurred:", err.message);
   }
 });
 
@@ -115,10 +115,12 @@ cron.schedule("0 1 * * *", async () => {
     });
 
     if (!overdueUsers.length) {
-      return console.log("CRON: No overdue users found.");
+      return console.log("CRON: No overdue users found for heartbeat.");
     }
 
-    console.log(`CRON: Found ${overdueUsers.length} overdue user(s).`);
+    console.log(
+      `CRON: Found ${overdueUsers.length} overdue user(s) for heartbeat.`
+    );
 
     for (const user of overdueUsers) {
       try {
@@ -266,12 +268,65 @@ cron.schedule("0 1 * * *", async () => {
 
         await user.save();
       } catch (userError) {
-        console.error(`Error processing user ${user._id}:`, userError.message);
+        console.error(
+          `Error processing user heartbeat ${user._id}:`,
+          userError.message
+        );
       }
     }
 
-    console.log("CRON: Done processing all overdue users.");
+    console.log("CRON: Done processing all overdue heartbeats.");
   } catch (err) {
     console.error("CRON: Heartbeat check error occurred:", err.message);
+  }
+});
+
+cron.schedule("0 0 1 * *", async () => {
+  console.log("CRON: Running monthly user engagement check...");
+  try {
+    const users = await User.find({ isActive: true });
+    const now = new Date();
+
+    for (const user of users) {
+      try {
+        const lastEmailSent = user.lastEngagementEmailSent;
+        const lastClick = user.lastEngagementClick;
+
+        if (lastEmailSent) {
+          if (!lastClick || lastClick < lastEmailSent) {
+            user.consecutiveEngagementMisses += 1;
+          } else {
+            user.consecutiveEngagementMisses = 0;
+          }
+        }
+
+        if (user.consecutiveEngagementMisses >= 3) {
+          console.log(
+            `CRON: User ${user.email} missed 3 engagement emails. Sending butterfly mode message.`
+          );
+          await emailService.sendButterflyModeEmail(user);
+          user.consecutiveEngagementMisses = 0;
+        } else {
+          console.log(
+            `CRON: Sending monthly engagement email to ${user.email}. Missed count: ${user.consecutiveEngagementMisses}`
+          );
+          await emailService.sendEngagementEmail(user);
+          user.lastEngagementEmailSent = now;
+        }
+
+        await user.save();
+      } catch (userError) {
+        console.error(
+          `CRON: Failed to process engagement for user ${user.email}:`,
+          userError.message
+        );
+      }
+    }
+    console.log("CRON: Finished monthly user engagement check.");
+  } catch (err) {
+    console.error(
+      "CRON: Monthly engagement check error occurred:",
+      err.message
+    );
   }
 });

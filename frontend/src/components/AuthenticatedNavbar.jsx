@@ -5,8 +5,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Settings } from "lucide-react";
 
 export default function AuthenticatedNavbar() {
   const navigate = useNavigate();
@@ -26,7 +27,10 @@ export default function AuthenticatedNavbar() {
         >
           Dashboard
         </Link>
-        <Link className="flex items-center space-x-3 select-none">
+        <Link
+          to="/dashboard"
+          className="flex items-center space-x-3 select-none"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="44"
@@ -49,10 +53,21 @@ export default function AuthenticatedNavbar() {
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              align="end"
+              className="bg-slate-900 border-cyan-500 text-white"
+            >
+              <DropdownMenuItem
+                onClick={() => navigate("/profile")}
+                className="cursor-pointer focus:bg-cyan-800 focus:text-white"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Profile & Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-cyan-500/50" />
               <DropdownMenuItem
                 onClick={handleLogout}
-                className="cursor-pointer"
+                className="cursor-pointer text-red-400 focus:bg-red-800 focus:text-white"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout

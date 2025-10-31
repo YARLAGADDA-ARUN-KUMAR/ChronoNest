@@ -18,7 +18,12 @@ const capsuleSchema = new mongoose.Schema(
     },
     recipients: [recipientSchema],
     triggerType: { type: String, enum: ["date", "butterfly"], required: true },
-    triggerDate: { type: Date, required: true },
+    triggerDate: {
+      type: Date,
+      required: function () {
+        return this.triggerType === "date";
+      },
+    },
     isReleased: { type: Boolean, default: false },
     releaseDate: Date,
   },

@@ -11,6 +11,8 @@ import CapsuleListPage from "../pages/CapsuleListPage";
 import CapsuleDetailsPage from "../pages/CapsuleDetailsPage";
 import CapsuleEditForm from "../pages/CapsuleEditForm";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProfilePage from "../pages/ProfilePage";
+import EngagementSuccessPage from "../pages/EngagementSuccessPage"; // ✅ new import
 
 function App() {
   return (
@@ -60,9 +62,22 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route
+              path="/engagement-success"
+              element={<EngagementSuccessPage />}
+            />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
