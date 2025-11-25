@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { API_BASE_URL } from '@/lib/config';
+import { API_URL } from '@/lib/utils';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export const AuthContext = createContext();
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
                 body = JSON.stringify(formData);
                 headers = { 'Content-Type': 'application/json' };
             }
-            const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+            const response = await fetch(`${API_URL}/api/auth/signup`, {
                 method: 'POST',
                 headers,
                 body,

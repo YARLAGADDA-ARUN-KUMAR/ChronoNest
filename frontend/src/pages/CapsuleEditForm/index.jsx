@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/lib/config';
+import { API_URL } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AuthenticatedNavbar from '../../components/AuthenticatedNavbar';
@@ -16,7 +16,7 @@ export default function CapsuleEditForm() {
     useEffect(() => {
         async function fetchCapsule() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/capsules/${id}`, {
+                const res = await fetch(`${API_URL}/api/capsules/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const data = await res.json();
@@ -32,7 +32,7 @@ export default function CapsuleEditForm() {
     }, [id, token]);
 
     const handleSave = async (formData) => {
-        const res = await fetch(`${API_BASE_URL}/api/capsules/${id}`, {
+        const res = await fetch(`${API_URL}/api/capsules/${id}`, {
             method: 'PUT',
             headers: {
                 Authorization: `Bearer ${token}`,

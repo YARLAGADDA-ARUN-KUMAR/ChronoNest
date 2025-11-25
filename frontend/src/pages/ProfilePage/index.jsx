@@ -11,7 +11,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/lib/config';
+import { API_URL } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import AuthenticatedNavbar from '../../components/AuthenticatedNavbar';
 
@@ -62,7 +62,7 @@ export default function ProfilePage() {
                 payload.password = fields.password;
             }
 
-            const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
+            const res = await fetch(`${API_URL}/api/user/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,11 +106,18 @@ export default function ProfilePage() {
                                         id="name"
                                         value={fields.name}
                                         onChange={(e) => handleChange('name', e.target.value)}
+                                        className="mt-2"
                                     />
                                 </div>
                                 <div>
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" value={fields.email} disabled />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        value={fields.email}
+                                        className="mt-2"
+                                        disabled
+                                    />
                                 </div>
                                 <div>
                                     <Label htmlFor="password">New Password</Label>
@@ -120,6 +127,7 @@ export default function ProfilePage() {
                                         value={fields.password}
                                         onChange={(e) => handleChange('password', e.target.value)}
                                         placeholder="Leave blank to keep current password"
+                                        className="mt-2"
                                     />
                                 </div>
                                 <div className="pt-4">
@@ -139,10 +147,11 @@ export default function ProfilePage() {
                                         onChange={(e) =>
                                             handleChange('heartbeatIntervalDays', e.target.value)
                                         }
+                                        className="mt-2"
                                     />
                                 </div>
                                 <div>
-                                    <Label htmlFor="preferredHeartbeatChannel">
+                                    <Label htmlFor="preferredHeartbeatChannel" className="mb-2">
                                         Reminder Channel
                                     </Label>
                                     <Select
@@ -169,11 +178,12 @@ export default function ProfilePage() {
                                             handleChange('heartbeatContact', e.target.value)
                                         }
                                         placeholder="Your email or WhatsApp number"
+                                        className="mt-2"
                                     />
                                 </div>
                                 <ErrorDisplay message={error} />
                                 {success && <p className="text-green-500">{success}</p>}
-                                <Button type="submit" disabled={loading}>
+                                <Button type="submit" disabled={loading} className="bg-green-500">
                                     {loading ? 'Saving...' : 'Save Changes'}
                                 </Button>
                             </form>

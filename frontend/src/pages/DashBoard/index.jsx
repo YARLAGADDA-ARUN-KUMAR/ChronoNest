@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/lib/config';
+import { API_URL } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthenticatedNavbar from '../../components/AuthenticatedNavbar';
@@ -17,7 +17,7 @@ export default function DashboardPage() {
             setLoading(true);
             setError('');
             try {
-                const res = await fetch(`${API_BASE_URL}/api/capsules/dashboard/summary`, {
+                const res = await fetch(`${API_URL}/api/capsules/dashboard/summary`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!res.ok) {

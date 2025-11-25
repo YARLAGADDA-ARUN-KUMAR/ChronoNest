@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/lib/config';
+import { API_URL } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import AuthenticatedNavbar from '../../components/AuthenticatedNavbar';
 import CapsuleUpsertForm from '../../components/create-capsule/CapsuleUpsertForm';
@@ -9,7 +9,7 @@ export default function CreateCapsule() {
     const navigate = useNavigate();
 
     const handleSave = async (formData) => {
-        const res = await fetch(`${API_BASE_URL}/api/capsules`, {
+        const res = await fetch(`${API_URL}/api/capsules`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,

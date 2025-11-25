@@ -1,8 +1,8 @@
-import AuthenticatedNavbar from '@/components/AuthenticatedNavbar';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/lib/config';
+import { API_URL } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import AuthenticatedNavbar from '../../components/AuthenticatedNavbar';
 
 function CapsuleDetailsPage() {
     const { id } = useParams();
@@ -17,7 +17,7 @@ function CapsuleDetailsPage() {
             setLoading(true);
             setError('');
             try {
-                const res = await fetch(`${API_BASE_URL}/api/capsules/${id}`, {
+                const res = await fetch(`${API_URL}/api/capsules/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -62,7 +62,7 @@ function CapsuleDetailsPage() {
     const handleDelete = async () => {
         if (!window.confirm('Are you sure you want to delete this capsule?')) return;
         try {
-            const res = await fetch(`${API_BASE_URL}/api/capsules/${capsule._id}`, {
+            const res = await fetch(`${API_URL}/api/capsules/${capsule._id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             });
